@@ -23,6 +23,7 @@ namespace Shapes
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new ViewModelCanvas();
         }
     }
 }

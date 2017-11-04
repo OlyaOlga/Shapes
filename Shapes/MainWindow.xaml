@@ -5,8 +5,62 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Shapes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="DrawShapes" Height="700" Width="700">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_New"  />
+                    <MenuItem Header="_Open" />
+                    <MenuItem Header="_Save" />
+                </MenuItem>
+                <MenuItem Header="_Shapes" ItemsSource="{Binding model.pentagons}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Name}"/>
+                            <Setter Property="IsCheckable" Value="True"/>
+                            <Setter Property="Command" Value="{Binding DataContext.PentagonMenuItemClick,
+                                    RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, Mode=FindAncestor}}"/>
+                            <Setter Property="CommandParameter" Value="{Binding}"></Setter>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        <ItemsControl Grid.Row="1"  ItemsSource="{Binding model.pentagons}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas x:Name ="canvasArea" HorizontalAlignment="Left" Height="500" Margin="0,120,0,0" Grid.Row="1" VerticalAlignment="Top" Width="682" Background="LightCyan">
+                        <Canvas.InputBindings>
+                            <MouseBinding Gesture="LeftClick" Command="{Binding OutputMessageBoxCommand}"
+                              CommandParameter="{Binding ElementName=canvasArea}"></MouseBinding>
+                        </Canvas.InputBindings>
+                    </Canvas>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                    <Polygon Points="{Binding Points}" Fill="{Binding Color}">
+                        <Polygon.Effect>
+                            <DropShadowEffect ShadowDepth="0" BlurRadius="{Binding Radius}" Color="Orange"/>
+                        </Polygon.Effect>
+                    </Polygon>
+                </DataTemplate>
+                </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Slider x:Name="BColorSlider" Value="{Binding BColorValue}" SelectionStart="5" SelectionEnd="225" Maximum ="255" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="225" Grid.Row="1"/>
+        <Slider x:Name="GColorSlider" Value="{Binding GColorValue}" SelectionStart="5" SelectionEnd="225" Maximum ="255" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="220" Grid.Row="1"/>
+        <Slider x:Name="RColorSlider" Value="{Binding RColorValue}" SelectionStart="5" SelectionEnd="225" Maximum ="255" HorizontalAlignment="Left" Margin="10,90,0,0" VerticalAlignment="Top" Width="220" Grid.Row="1"/>
+        <TextBox x:Name="BTextBox" HorizontalAlignment="Left" Height="23" Margin="261,14,0,0" Grid.Row="1" TextWrapping="Wrap" Text ="{Binding BColorValue}" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="GTextBox" HorizontalAlignment="Left" Height="23" Margin="261,44,0,0" Grid.Row="1" TextWrapping="Wrap" Text ="{Binding GColorValue}" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="RTextBox" HorizontalAlignment="Left" Height="23" Margin="261,74,0,0" Grid.Row="1" TextWrapping="Wrap" Text ="{Binding RColorValue}" VerticalAlignment="Top" Width="120"/>
+        <Label x:Name="BLabel" Content="B" HorizontalAlignment="Left" Width="23" Height="24" Margin="405,10,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+        <Label x:Name="GLabel" Content="G" HorizontalAlignment="Left" Width="23" Height="24" Margin="405,40,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+        <Label x:Name="RLabel" Content="R" HorizontalAlignment="Left" Width="23" Height="24" Margin="405,70,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+        <Label x:Name="label" Background="{Binding CurrentColor}" HorizontalAlignment="Left" Margin="450,50,0,0" VerticalAlignment="Top" Height="48" Grid.RowSpan="2" Width="53"/>
     </Grid>
 </Window>
