@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -9,26 +10,29 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Win32;
 using Shapes.Annotations;
 
 namespace Shapes
 {
-    class ViewModelCanvas:
+    class ViewModelCanvas :
         INotifyPropertyChanged
     {
         private void _changeColor()
         {
             Color newColor = new Color();
-            newColor.B = (byte)BColorValue;
-            newColor.G = (byte)GColorValue;
-            newColor.R = (byte)RColorValue;
+            newColor.B = (byte) BColorValue;
+            newColor.G = (byte) GColorValue;
+            newColor.R = (byte) RColorValue;
             newColor.A = 255;
             CurrentColor = new SolidColorBrush(newColor);
         }
+
         public int _BColorValue;
         public int _GColorValue;
         public int _RColorValue;
-        private Model _model ;
+        private Model _model;
+
         private void ShowMessageBox(object param)
         {
             if (!model.pentagons.Any(s => s.CanDrag))
@@ -38,37 +42,39 @@ namespace Shapes
                 model.AddVertexToPentagon(mouseCoordinate, CurrentColor);
             }
         }
+
         public Model model
         {
-            get
-            {
-                return _model;
-            }
+            get { return _model; }
             set
             {
                 _model = value;
                 OnPropertyChanged("model");
             }
         }
+
         public ViewModelCanvas()
         {
             OutputMessageBoxCommand = new AbstractCommand(ShowMessageBox);
             model = new Model();
-            Ps = model.pentagons;
             PentagonMenuItemClick = new AbstractCommand(MenuItemClick);
+            OpenCommand = new AbstractCommand(Open);
+            SaveCommand = new AbstractCommand(Save);
+            NewCommand = new AbstractCommand(New);
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public AbstractCommand OutputMessageBoxCommand { get; set; }
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private Brush _currentColor = Brushes.Black;
-        private ObservableCollection<Pentagon> _ps;
+        private SolidColorBrush _currentColor = Brushes.Black;
 
-        public Brush CurrentColor
+        public SolidColorBrush CurrentColor
         {
             get { return _currentColor; }
             set
@@ -77,7 +83,13 @@ namespace Shapes
                 OnPropertyChanged(nameof(CurrentColor));
             }
         }
-        
+
+        public ICommand OpenCommand { get; set; }
+
+        public ICommand SaveCommand { get; set; }
+
+        public ICommand NewCommand { get; set; }
+
         public int BColorValue
         {
             get { return _BColorValue; }
@@ -113,27 +125,12 @@ namespace Shapes
 
         public AbstractCommand PentagonMenuItemClick { get; set; }
 
-        public ObservableCollection<Pentagon> Ps
-        {
-            get { return _ps; }
-            set
-            {
-                _ps = value;
-                OnPropertyChanged(nameof(Ps));
-            }
-        }
-
         private void MenuItemClick(object parameter)
         {
             var p = parameter as Pentagon;
             EnableClickedItem(p);
 
-            //OnPropertyChanged(nameof(model));
             OnPropertyChanged(nameof(model.pentagons));
-            //p.OnPropertyChanged("Points");
-            //model.pentagons.Remove(p);
-
-            OnPropertyChanged(nameof(Ps));
         }
 
         private void EnableClickedItem(Pentagon p)
@@ -147,11 +144,37 @@ namespace Shapes
                 }
                 else
                 {
-                    item.Radius = (item.Radius + 15) % 30;
+                    item.Radius = (item.Radius + 15)%30;
                 }
             }
         }
+
+        private void Open(object parametr)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Filter = "XML (*.xml)|*.xml";
+            var confirm = dialog.ShowDialog();
+            if (confirm ?? false)
+            {
+                model = Model.Deserialize(dialog.FileName);
+            }
+        }
+
+        private void Save(object parametr)
+        {
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "XML (*.xml)|*.xml";
+            var confirm = dialog.ShowDialog();
+            if (confirm ?? false)
+            {
+                model.Serialize(dialog.FileName);
+            }
+        }
+
+        private void New(object parametr)
+        {
+            model = new Model();
+
+        }
     }
-
-
 }

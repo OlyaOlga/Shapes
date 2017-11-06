@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Media;
+using System.Xml;
+using System.Xml.Serialization;
 using Shapes.Annotations;
 
 namespace Shapes
-{
+{ 
     public class Pentagon:
         INotifyPropertyChanged
     {
         private PointCollection points ;
-        private Brush _color;
+        private SolidColorBrush _color;
         private int _radius;
         private bool _canDrag;
 
@@ -31,7 +35,7 @@ namespace Shapes
             }
         }
 
-        public Brush Color
+        public SolidColorBrush Color
         {
             get { return _color; }
             set
@@ -85,6 +89,29 @@ namespace Shapes
         public virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Serialize(string fileName)
+        {
+            using (var stream = File.Open(fileName, FileMode.OpenOrCreate))
+            {
+                XamlWriter.Save(this, stream);
+            }
+        }
+
+        public static Pentagon Deserialize(string fileName)
+        {
+            Pentagon result = null;
+            using (var stream = File.OpenRead(fileName))
+            {
+                result = (XamlReader.Load(stream) as Pentagon);
+            }
+            return result;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

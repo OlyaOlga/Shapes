@@ -39,29 +39,15 @@ namespace Shapes
         {
             var element = (UIElement)sender;
             var isDrag = (bool)e.NewValue;
-
-            Instance = new DragBehavior();
-
+            
             if (isDrag)
             {
-                if (UiElements.Find(s => s == element) == null)
-                {
-                    ((UIElement)sender).RenderTransform = Instance.Transform;
-                    UiElements.Add(element);
-                    Bools.Add(true);
-                }
-                else
-                {
-                    Bools[UiElements.FindIndex(s => s == element)] = true;
-                }
-
                 element.MouseLeftButtonDown += Instance.ElementOnMouseLeftButtonDown;
                 element.MouseLeftButtonUp += Instance.ElementOnMouseLeftButtonUp;
                 element.MouseMove += Instance.ElementOnMouseMove;
             }
             else
             {
-                Bools[UiElements.FindIndex(s => s == element)] = false;
                 element.MouseLeftButtonDown -= Instance.ElementOnMouseLeftButtonDown;
                 element.MouseLeftButtonUp -= Instance.ElementOnMouseLeftButtonUp;
                 element.MouseMove -= Instance.ElementOnMouseMove;
@@ -95,13 +81,11 @@ namespace Shapes
             var parent = Application.Current.MainWindow;
             var mousePos = mouseEventArgs.GetPosition(parent);
             var diff = mousePos - mouseStartPosition2;
-            if (!((UIElement)sender).IsMouseCaptured || !Bools[UiElements.FindIndex(s => s == sender as UIElement)])
+            if (!((UIElement)sender).IsMouseCaptured)
             {
                 return;
             }
-
-            //Transform.X = elementStartPosition2.X + diff.X;
-            //Transform.Y = elementStartPosition2.Y + diff.Y;
+            
             var p = sender as Polygon;
             PointCollection newEdges = new PointCollection();
             Debug.Assert(p != null, "p != null");

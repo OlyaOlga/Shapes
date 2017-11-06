@@ -11,12 +11,24 @@
             <RowDefinition Height="20"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
+
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Command="{Binding NewCommand}" Header="New" />
+                <MenuItem Command="{Binding SaveCommand}" Header="Save" />
+                <MenuItem Command="{Binding OpenCommand}" Header="Open" />
+                <MenuItem ItemsSource="{Binding Path = model.pentagons, UpdateSourceTrigger=PropertyChanged}"  Header="Pentagons"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
+
+       
+        
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_New"  />
-                    <MenuItem Header="_Open" />
-                    <MenuItem Header="_Save" />
+                    <MenuItem Header="_New" Command = "{Binding NewCommand}" />
+                    <MenuItem Header="_Open" Command = "{Binding OpenCommand}" />
+                    <MenuItem Header="_Save" Command = "{Binding SaveCommand}" />
                 </MenuItem>
                 <MenuItem Header="_Shapes" ItemsSource="{Binding model.pentagons}">
                     <MenuItem.ItemContainerStyle>
@@ -46,7 +58,7 @@
                 <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Polygon Points="{Binding Points, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Fill="{Binding Color}"
-                             local:DragBehavior.Drag="{Binding CanDrag}">
+                             local:DragBehavior.Drag="{Binding CanDrag, Mode=TwoWay}">
                         <Polygon.Effect>
                             <DropShadowEffect ShadowDepth="0" BlurRadius="{Binding Radius}" Color="YellowGreen"/>
                         </Polygon.Effect>

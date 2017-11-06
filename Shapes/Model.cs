@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Media;
+using System.Xml.Serialization;
 using Shapes.Annotations;
 
 namespace Shapes
@@ -15,10 +18,10 @@ namespace Shapes
     public class Model:
         INotifyPropertyChanged
     {
-        private Pentagon currentPentagon;
+        private Pentagon currentPentagon = new Pentagon();
         private int count;
         private ObservableCollection<Pentagon> _pentagons;
-
+        
         public ObservableCollection<Pentagon> pentagons
         {
             get { return _pentagons; }
@@ -29,6 +32,7 @@ namespace Shapes
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Pentagon CurrentPentagon
         {
             get { return currentPentagon; }
@@ -42,13 +46,12 @@ namespace Shapes
         public Model()
         {
             pentagons = new ObservableCollection<Pentagon>();
-            CurrentPentagon = new Pentagon();
         }
 
-        public void AddVertexToPentagon(Point vertex, Brush color)
+        public void AddVertexToPentagon(Point vertex, SolidColorBrush color)
         {
             CurrentPentagon.Add(vertex);
-            if (CurrentPentagon.Count == 3)
+            if (CurrentPentagon.Count == 5)
             {
                 CurrentPentagon.Name = $"Pentagon [{count++}]";
                 CurrentPentagon.Color = color;
@@ -63,6 +66,25 @@ namespace Shapes
         public virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Serialize(string fileName)
+        {
+            using (var stream = File.Open(fileName, FileMode.OpenOrCreate))
+            {
+                stream.SetLength(0);
+                XamlWriter.Save(this, stream);
+            }
+        }
+
+        public static Model Deserialize(string fileName)
+        {
+            Model result=null;
+            using (var stream = File.OpenRead(fileName))
+            {
+                result = (XamlReader.Load(stream) as Model);
+            }
+            return result;
         }
     }
 }
