@@ -23,6 +23,7 @@
                         <Style TargetType="MenuItem">
                             <Setter Property="Header" Value="{Binding Name}"/>
                             <Setter Property="IsCheckable" Value="True"/>
+                            <Setter Property="IsChecked" Value="{Binding CanDrag, Mode=TwoWay}" />
                             <Setter Property="Command" Value="{Binding DataContext.PentagonMenuItemClick,
                                     RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, Mode=FindAncestor}}"/>
                             <Setter Property="CommandParameter" Value="{Binding}"></Setter>
@@ -43,10 +44,11 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                    <Polygon Points="{Binding Points}" Fill="{Binding Color}">
+                <DataTemplate>
+                    <Polygon Points="{Binding Points, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Fill="{Binding Color}"
+                             local:DragBehavior.Drag="{Binding CanDrag}">
                         <Polygon.Effect>
-                            <DropShadowEffect ShadowDepth="0" BlurRadius="{Binding Radius}" Color="Orange"/>
+                            <DropShadowEffect ShadowDepth="0" BlurRadius="{Binding Radius}" Color="YellowGreen"/>
                         </Polygon.Effect>
                     </Polygon>
                 </DataTemplate>
@@ -61,6 +63,6 @@
         <Label x:Name="BLabel" Content="B" HorizontalAlignment="Left" Width="23" Height="24" Margin="405,10,0,0" Grid.Row="1" VerticalAlignment="Top"/>
         <Label x:Name="GLabel" Content="G" HorizontalAlignment="Left" Width="23" Height="24" Margin="405,40,0,0" Grid.Row="1" VerticalAlignment="Top"/>
         <Label x:Name="RLabel" Content="R" HorizontalAlignment="Left" Width="23" Height="24" Margin="405,70,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-        <Label x:Name="label" Background="{Binding CurrentColor}" HorizontalAlignment="Left" Margin="450,50,0,0" VerticalAlignment="Top" Height="48" Grid.RowSpan="2" Width="53"/>
+        <Label x:Name="ColorLabel" Background="{Binding CurrentColor}" HorizontalAlignment="Left" Margin="450,50,0,0" VerticalAlignment="Top" Height="48" Grid.RowSpan="2" Width="53"/>
     </Grid>
 </Window>

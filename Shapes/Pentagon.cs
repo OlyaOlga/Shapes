@@ -17,6 +17,7 @@ namespace Shapes
         private PointCollection points ;
         private Brush _color;
         private int _radius;
+        private bool _canDrag;
 
         public string Name { get; set; }
 
@@ -40,7 +41,15 @@ namespace Shapes
             }
         }
 
-        public bool CanDrag { get; set; }
+        public bool CanDrag
+        {
+            get { return _canDrag; }
+            set
+            {
+                _canDrag = value; 
+                OnPropertyChanged(nameof(CanDrag));
+            }
+        }
 
         public PointCollection Points
         {
@@ -51,7 +60,7 @@ namespace Shapes
             set
             {
                 points = value;
-                OnPropertyChanged("Points");
+                OnPropertyChanged(nameof(Points));
             }
         }
 
@@ -73,7 +82,7 @@ namespace Shapes
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

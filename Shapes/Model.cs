@@ -17,7 +17,17 @@ namespace Shapes
     {
         private Pentagon currentPentagon;
         private int count;
-        public ObservableCollection<Pentagon> pentagons { get; set; }
+        private ObservableCollection<Pentagon> _pentagons;
+
+        public ObservableCollection<Pentagon> pentagons
+        {
+            get { return _pentagons; }
+            set
+            {
+                _pentagons = value;
+                OnPropertyChanged(nameof(pentagons));
+            }
+        }
 
         public Pentagon CurrentPentagon
         {
@@ -38,7 +48,7 @@ namespace Shapes
         public void AddVertexToPentagon(Point vertex, Brush color)
         {
             CurrentPentagon.Add(vertex);
-            if (CurrentPentagon.Count == 5)
+            if (CurrentPentagon.Count == 3)
             {
                 CurrentPentagon.Name = $"Pentagon [{count++}]";
                 CurrentPentagon.Color = color;
@@ -50,7 +60,7 @@ namespace Shapes
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -30,18 +31,12 @@ namespace Shapes
         private Model _model ;
         private void ShowMessageBox(object param)
         {
-            Point mouseCoordinate = new Point(Mouse.GetPosition(param as IInputElement).X, Mouse.GetPosition(param as IInputElement).Y);
-            model.AddVertexToPentagon(mouseCoordinate, CurrentColor);
-            if (model.CurrentPentagon.Count == 0)
+            if (!model.pentagons.Any(s => s.CanDrag))
             {
-                string res = string.Empty;
-                foreach (var point in model.pentagons[model.pentagons.Count - 1].Points) 
-                {
-                    res += $"X: {point.X}; Y: {point.Y}\n";
-                }
-              //  MessageBox.Show(res);
+                Point mouseCoordinate = new Point(Mouse.GetPosition(param as IInputElement).X,
+                    Mouse.GetPosition(param as IInputElement).Y);
+                model.AddVertexToPentagon(mouseCoordinate, CurrentColor);
             }
-            
         }
         public Model model
         {
@@ -59,6 +54,7 @@ namespace Shapes
         {
             OutputMessageBoxCommand = new AbstractCommand(ShowMessageBox);
             model = new Model();
+            Ps = model.pentagons;
             PentagonMenuItemClick = new AbstractCommand(MenuItemClick);
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -70,6 +66,7 @@ namespace Shapes
         }
 
         private Brush _currentColor = Brushes.Black;
+        private ObservableCollection<Pentagon> _ps;
 
         public Brush CurrentColor
         {
@@ -80,13 +77,7 @@ namespace Shapes
                 OnPropertyChanged(nameof(CurrentColor));
             }
         }
-
-        /*
-         
-             MainColor = new SolidColorBrush(Color.FromArgb(
-    SelectedColor.A, SelectedColor.R, SelectedColor.G, SelectedColor.B
-));
-             */
+        
         public int BColorValue
         {
             get { return _BColorValue; }
@@ -122,10 +113,43 @@ namespace Shapes
 
         public AbstractCommand PentagonMenuItemClick { get; set; }
 
+        public ObservableCollection<Pentagon> Ps
+        {
+            get { return _ps; }
+            set
+            {
+                _ps = value;
+                OnPropertyChanged(nameof(Ps));
+            }
+        }
+
         private void MenuItemClick(object parameter)
         {
             var p = parameter as Pentagon;
-            p.Radius = (p.Radius+ 15)%30;
+            EnableClickedItem(p);
+
+            //OnPropertyChanged(nameof(model));
+            OnPropertyChanged(nameof(model.pentagons));
+            //p.OnPropertyChanged("Points");
+            //model.pentagons.Remove(p);
+
+            OnPropertyChanged(nameof(Ps));
+        }
+
+        private void EnableClickedItem(Pentagon p)
+        {
+            foreach (var item in _model.pentagons)
+            {
+                if (p != item)
+                {
+                    item.CanDrag = false;
+                    item.Radius = 0;
+                }
+                else
+                {
+                    item.Radius = (item.Radius + 15) % 30;
+                }
+            }
         }
     }
 

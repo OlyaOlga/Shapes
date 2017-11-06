@@ -57,6 +57,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AbstractCommand.cs" />
+    <Compile Include="DragBehauvoir.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Pentagon.cs" />
     <Compile Include="Properties\Annotations.cs" />
