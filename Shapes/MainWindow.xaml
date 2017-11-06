@@ -17,7 +17,18 @@
                 <MenuItem Command="{Binding NewCommand}" Header="New" />
                 <MenuItem Command="{Binding SaveCommand}" Header="Save" />
                 <MenuItem Command="{Binding OpenCommand}" Header="Open" />
-                <MenuItem ItemsSource="{Binding Path = model.pentagons, UpdateSourceTrigger=PropertyChanged}"  Header="Pentagons"/>
+                <MenuItem ItemsSource="{Binding Path = model.pentagons, UpdateSourceTrigger=PropertyChanged}" Header="Pentagons">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Name}"/>
+                            <Setter Property="IsCheckable" Value="True"/>
+                            <Setter Property="IsChecked" Value="{Binding CanDrag, Mode=TwoWay}" />
+                            <Setter Property="Command" Value="{Binding DataContext.PentagonMenuItemClick,
+                                    RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, Mode=FindAncestor}}"/>
+                            <Setter Property="CommandParameter" Value="{Binding}"></Setter>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
             </ContextMenu>
         </Grid.ContextMenu>
 
